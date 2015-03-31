@@ -14,7 +14,7 @@ import java.util.UUID;
 @DatabaseTable(tableName = "users")
 public class User implements Cloneable {
     @DatabaseField(id = true)
-    private String id;
+    private String id = UUID.randomUUID().toString();
 
     @DatabaseField
     private String name;
@@ -25,7 +25,7 @@ public class User implements Cloneable {
     @DatabaseField
     private boolean isDeleted;
 
-    @DatabaseField
+    @DatabaseField(unique = true)
     private String email;
 
     @DatabaseField
@@ -38,7 +38,6 @@ public class User implements Cloneable {
     private String passwordAnswer;
 
     public User(String name, String email, String passwordHash, String passwordQuestion, String passwordAnswer) {
-        id = UUID.randomUUID().toString();
         this.name = name;
         this.createdAt = new Date().getTime();
         this.hashedPassword = passwordHash;

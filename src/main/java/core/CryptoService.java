@@ -59,22 +59,34 @@ import java.security.SecureRandom;
  * @version 0.2
  */
 public class CryptoService {
+
+    private static CryptoService INSTANCE;
+
+    private CryptoService() {}
+
+    // I've made it singleton to show how to mock objects with Mockito, sorry about that
+    public static CryptoService getInstance() {
+        if (INSTANCE == null)
+            INSTANCE = new CryptoService();
+        return INSTANCE;
+    }
+
 	// BCrypt parameters
-	private static final int GENSALT_DEFAULT_LOG2_ROUNDS = 10;
-	private static final int BCRYPT_SALT_LEN = 16;
+	private  final int GENSALT_DEFAULT_LOG2_ROUNDS = 10;
+	private  final int BCRYPT_SALT_LEN = 16;
 
 	// Blowfish parameters
-	private static final int BLOWFISH_NUM_ROUNDS = 16;
+	private  final int BLOWFISH_NUM_ROUNDS = 16;
 
 	// Initial contents of key schedule
-	private static final int P_orig[] = {
+	private  final int P_orig[] = {
 		0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
 		0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
 		0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c,
 		0xc0ac29b7, 0xc97c50dd, 0x3f84d5b5, 0xb5470917,
 		0x9216d5d9, 0x8979fb1b
 	};
-	private static final int S_orig[] = {
+	private  final int S_orig[] = {
 		0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
 		0xb8e1afed, 0x6a267e96, 0xba7c9045, 0xf12c7f99,
 		0x24a19947, 0xb3916cf7, 0x0801f2e2, 0x858efc16,
@@ -336,13 +348,13 @@ public class CryptoService {
 	// bcrypt IV: "OrpheanBeholderScryDoubt". The C implementation calls
 	// this "ciphertext", but it is really plaintext or an IV. We keep
 	// the name to make code comparison easier.
-	static private final int bf_crypt_ciphertext[] = {
+	 private final int bf_crypt_ciphertext[] = {
 		0x4f727068, 0x65616e42, 0x65686f6c,
 		0x64657253, 0x63727944, 0x6f756274
 	};
 
 	// Table for Base64 encoding
-	static private final char base64_code[] = {
+	 private final char base64_code[] = {
 		'.', '/', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
 		'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
 		'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
@@ -352,7 +364,7 @@ public class CryptoService {
 	};
 
 	// Table for Base64 decoding
-	static private final byte index_64[] = {
+	 private final byte index_64[] = {
 		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -382,7 +394,7 @@ public class CryptoService {
 	 * @return	base64-encoded string
 	 * @exception IllegalArgumentException if the length is invalid
 	 */
-	private static String encode_base64(byte d[], int len)
+	private  String encode_base64(byte d[], int len)
 		throws IllegalArgumentException {
 		int off = 0;
 		StringBuffer rs = new StringBuffer();
@@ -421,7 +433,7 @@ public class CryptoService {
 	 * @param x	the base64-encoded value
 	 * @return	the decoded value of x
 	 */
-	private static byte char64(char x) {
+	private  byte char64(char x) {
 		if ((int)x < 0 || (int)x > index_64.length)
 			return -1;
 		return index_64[(int)x];
@@ -436,7 +448,7 @@ public class CryptoService {
 	 * @return	an array containing the decoded bytes
 	 * @throws IllegalArgumentException if maxolen is invalid
 	 */
-	private static byte[] decode_base64(String s, int maxolen)
+	private  byte[] decode_base64(String s, int maxolen)
 		throws IllegalArgumentException {
 		StringBuffer rs = new StringBuffer();
 		int off = 0, slen = s.length(), olen = 0;
@@ -513,7 +525,7 @@ public class CryptoService {
 	 * current offset into data
 	 * @return	the next word of material from data
 	 */
-	private static int streamtoword(byte data[], int offp[]) {
+	private  int streamtoword(byte data[], int offp[]) {
 		int i;
 		int word = 0;
 		int off = offp[0];
@@ -645,7 +657,7 @@ public class CryptoService {
 	 * using BCrypt.gensalt)
 	 * @return	the hashed password
 	 */
-	public static String hashpw(String password, String salt) {
+	public  String hashpw(String password, String salt) {
 		CryptoService B;
 		String real_salt;
 		byte passwordb[], saltb[], hashed[];
@@ -708,7 +720,7 @@ public class CryptoService {
 	 * @param random		an instance of SecureRandom to use
 	 * @return	an encoded salt value
 	 */
-	public static String gensalt(int log_rounds, SecureRandom random) {
+	public  String gensalt(int log_rounds, SecureRandom random) {
 		StringBuffer rs = new StringBuffer();
 		byte rnd[] = new byte[BCRYPT_SALT_LEN];
 
@@ -734,7 +746,7 @@ public class CryptoService {
 	 * 2**log_rounds.
 	 * @return	an encoded salt value
 	 */
-	public static String gensalt(int log_rounds) {
+	public  String gensalt(int log_rounds) {
 		return gensalt(log_rounds, new SecureRandom());
 	}
 
@@ -744,7 +756,7 @@ public class CryptoService {
 	 * rounds to apply
 	 * @return	an encoded salt value
 	 */
-	public static String gensalt() {
+	public  String gensalt() {
 		return gensalt(GENSALT_DEFAULT_LOG2_ROUNDS);
 	}
 
@@ -755,7 +767,7 @@ public class CryptoService {
 	 * @param hashed	the previously-hashed password
 	 * @return	true if the passwords match, false otherwise
 	 */
-	public static boolean checkpw(String plaintext, String hashed) {
+	public  boolean checkpw(String plaintext, String hashed) {
 		byte hashed_bytes[];
 		byte try_bytes[];
 		try {

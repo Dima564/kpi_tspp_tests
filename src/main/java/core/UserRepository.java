@@ -41,10 +41,20 @@ public class UserRepository {
         dao.create(user);
     }
 
-    public User get(String email) throws SQLException {
+    public User getByEmail(String email) throws SQLException {
         QueryBuilder<User, String> qb = dao.queryBuilder();
         qb.setWhere(qb.where().eq("email", email));
         return qb.queryForFirst();
+    }
+
+    public User getByName(String name) throws SQLException {
+        QueryBuilder<User, String> qb = dao.queryBuilder();
+        qb.setWhere(qb.where().eq("name", name));
+        return qb.queryForFirst();
+    }
+
+    public User get(String id) throws SQLException {
+        return dao.queryForId(id);
     }
 
     public List<User> getUsersPage(Long page, Long perPage) throws SQLException {
@@ -59,5 +69,20 @@ public class UserRepository {
         dao.update(user);
     }
 
+    public void save(User user) throws SQLException {
+        dao.createOrUpdate(user);
+    }
 
+    public List<User> getAll() throws SQLException {
+        return dao.queryForAll();
+    }
+
+    public long count() throws SQLException {
+        return dao.countOf();
+    }
+
+
+    public void deleteAll() throws SQLException {
+        TableUtils.clearTable(new JdbcConnectionSource(DATABASE_URL), User.class);
+    }
 }
