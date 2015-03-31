@@ -9,20 +9,6 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
-    main {
-        java {
-            "src/"
-        }
-    }
-
-    test {
-        "test"
-    }
-}
-
-
-
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
@@ -30,4 +16,5 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-jdbc:4.48'
     compile 'com.j256.ormlite:ormlite-core:4.48'
     compile 'org.projectlombok:lombok:1.16.2'
+    compile 'org.mockito:mockito-all:2.0.2-beta'
 }
